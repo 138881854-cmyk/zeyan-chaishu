@@ -1,0 +1,564 @@
+{
+  "nodes": [
+    {
+      "id": "Secret Body",
+      "title": "Secret Body",
+      "rating": "S",
+      "word_count": 3996,
+      "theme": "西方哲学",
+      "color": "#34495E"
+    },
+    {
+      "id": "也许你该找个人聊聊",
+      "title": "也许你该找个人聊聊",
+      "rating": "",
+      "word_count": 4931,
+      "theme": "心理学",
+      "color": "#8E44AD"
+    },
+    {
+      "id": "亲密关系",
+      "title": "亲密关系",
+      "rating": "",
+      "word_count": 8277,
+      "theme": "关系与性别",
+      "color": "#E74C3C"
+    },
+    {
+      "id": "人性的优点",
+      "title": "人性的优点",
+      "rating": "",
+      "word_count": 1862,
+      "theme": "心理学",
+      "color": "#8E44AD"
+    },
+    {
+      "id": "人性的弱点",
+      "title": "人性的弱点",
+      "rating": "",
+      "word_count": 2205,
+      "theme": "心理学",
+      "color": "#8E44AD"
+    },
+    {
+      "id": "传习录",
+      "title": "传习录",
+      "rating": "",
+      "word_count": 5377,
+      "theme": "中国哲学",
+      "color": "#C0392B"
+    },
+    {
+      "id": "像哲学家一样生活",
+      "title": "像哲学家一样生活",
+      "rating": "S",
+      "word_count": 4098,
+      "theme": "斯多葛哲学",
+      "color": "#8B6914"
+    },
+    {
+      "id": "创业维艰",
+      "title": "创业维艰",
+      "rating": "",
+      "word_count": 2600,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "创新者的窘境",
+      "title": "创新者的窘境",
+      "rating": "S",
+      "word_count": 4569,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "卓有成效的管理者",
+      "title": "卓有成效的管理者",
+      "rating": "",
+      "word_count": 4553,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "卡拉马佐夫兄弟",
+      "title": "卡拉马佐夫兄弟",
+      "rating": "",
+      "word_count": 3415,
+      "theme": "文学经典",
+      "color": "#7D3C98"
+    },
+    {
+      "id": "历史的教训",
+      "title": "历史的教训",
+      "rating": "A",
+      "word_count": 5196,
+      "theme": "历史文明",
+      "color": "#7F8C8D"
+    },
+    {
+      "id": "原则",
+      "title": "原则",
+      "rating": "S",
+      "word_count": 4345,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "周易译注",
+      "title": "周易译注",
+      "rating": "S",
+      "word_count": 5078,
+      "theme": "中国哲学",
+      "color": "#C0392B"
+    },
+    {
+      "id": "和压力做朋友",
+      "title": "和压力做朋友",
+      "rating": "",
+      "word_count": 1457,
+      "theme": "心理学",
+      "color": "#8E44AD"
+    },
+    {
+      "id": "塞涅卡道德书简",
+      "title": "塞涅卡道德书简",
+      "rating": "S",
+      "word_count": 2844,
+      "theme": "斯多葛哲学",
+      "color": "#8B6914"
+    },
+    {
+      "id": "增长黑客",
+      "title": "增长黑客",
+      "rating": "",
+      "word_count": 4022,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "定位",
+      "title": "定位",
+      "rating": "",
+      "word_count": 3279,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "思考致富",
+      "title": "思考致富",
+      "rating": "",
+      "word_count": 1929,
+      "theme": "投资财富",
+      "color": "#27AE60"
+    },
+    {
+      "id": "我从达尔文那里学到的投资知识",
+      "title": "我从达尔文那里学到的投资知识",
+      "rating": "",
+      "word_count": 1923,
+      "theme": "投资财富",
+      "color": "#27AE60"
+    },
+    {
+      "id": "我能否相信自己",
+      "title": "我能否相信自己",
+      "rating": "S",
+      "word_count": 3789,
+      "theme": "西方哲学",
+      "color": "#34495E"
+    },
+    {
+      "id": "权力",
+      "title": "权力",
+      "rating": "",
+      "word_count": 6688,
+      "theme": "权力与领导",
+      "color": "#2C3E50"
+    },
+    {
+      "id": "梁启超讲读王阳明心学",
+      "title": "梁启超讲读王阳明心学",
+      "rating": "S",
+      "word_count": 8064,
+      "theme": "中国哲学",
+      "color": "#C0392B"
+    },
+    {
+      "id": "激荡三十年",
+      "title": "激荡三十年",
+      "rating": "S",
+      "word_count": 3929,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "爱比克泰德论说集",
+      "title": "爱比克泰德论说集",
+      "rating": "S",
+      "word_count": 3260,
+      "theme": "斯多葛哲学",
+      "color": "#8B6914"
+    },
+    {
+      "id": "理解人性",
+      "title": "理解人性",
+      "rating": "",
+      "word_count": 7559,
+      "theme": "心理学",
+      "color": "#8E44AD"
+    },
+    {
+      "id": "男人来自火星女人来自金星",
+      "title": "男人来自火星女人来自金星",
+      "rating": "",
+      "word_count": 2160,
+      "theme": "关系与性别",
+      "color": "#E74C3C"
+    },
+    {
+      "id": "百万富翁快车道",
+      "title": "百万富翁快车道",
+      "rating": "",
+      "word_count": 2261,
+      "theme": "投资财富",
+      "color": "#27AE60"
+    },
+    {
+      "id": "第二性",
+      "title": "第二性",
+      "rating": "",
+      "word_count": 3337,
+      "theme": "关系与性别",
+      "color": "#E74C3C"
+    },
+    {
+      "id": "老子智慧八十一讲",
+      "title": "老子智慧八十一讲",
+      "rating": "",
+      "word_count": 2793,
+      "theme": "中国哲学",
+      "color": "#C0392B"
+    },
+    {
+      "id": "老子道德经注",
+      "title": "老子道德经注",
+      "rating": "S",
+      "word_count": 7318,
+      "theme": "中国哲学",
+      "color": "#C0392B"
+    },
+    {
+      "id": "自控力",
+      "title": "自控力",
+      "rating": "",
+      "word_count": 1929,
+      "theme": "心理学",
+      "color": "#8E44AD"
+    },
+    {
+      "id": "自私的基因",
+      "title": "自私的基因",
+      "rating": "",
+      "word_count": 5360,
+      "theme": "生命科学",
+      "color": "#D35400"
+    },
+    {
+      "id": "芒格之道",
+      "title": "芒格之道",
+      "rating": "",
+      "word_count": 2123,
+      "theme": "投资财富",
+      "color": "#27AE60"
+    },
+    {
+      "id": "苏世民我的经验与教训",
+      "title": "苏世民我的经验与教训",
+      "rating": "",
+      "word_count": 3073,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "赢-有钱人和你想象的不一样",
+      "title": "赢-有钱人和你想象的不一样",
+      "rating": "",
+      "word_count": 10687,
+      "theme": "投资财富",
+      "color": "#27AE60"
+    },
+    {
+      "id": "超越百岁",
+      "title": "超越百岁",
+      "rating": "",
+      "word_count": 0,
+      "theme": "健康长寿",
+      "color": "#E67E22"
+    },
+    {
+      "id": "身体重置",
+      "title": "身体重置",
+      "rating": "A",
+      "word_count": 4214,
+      "theme": "健康长寿",
+      "color": "#E67E22"
+    },
+    {
+      "id": "这就是OKR",
+      "title": "这就是OKR",
+      "rating": "S",
+      "word_count": 4789,
+      "theme": "商业管理",
+      "color": "#2E86C1"
+    },
+    {
+      "id": "进化心理学",
+      "title": "进化心理学",
+      "rating": "",
+      "word_count": 6028,
+      "theme": "生命科学",
+      "color": "#D35400"
+    },
+    {
+      "id": "逻辑哲学论",
+      "title": "逻辑哲学论",
+      "rating": "",
+      "word_count": 8677,
+      "theme": "西方哲学",
+      "color": "#34495E"
+    },
+    {
+      "id": "金字塔原理",
+      "title": "金字塔原理",
+      "rating": "",
+      "word_count": 2848,
+      "theme": "认知思维",
+      "color": "#16A085"
+    }
+  ],
+  "links": [
+    {
+      "source": "像哲学家一样生活",
+      "target": "爱比克泰德论说集",
+      "type": "递进",
+      "description": "入门概论 → 原著原文"
+    },
+    {
+      "source": "像哲学家一样生活",
+      "target": "塞涅卡道德书简",
+      "type": "递进",
+      "description": "入门概论 → 原著原文"
+    },
+    {
+      "source": "爱比克泰德论说集",
+      "target": "塞涅卡道德书简",
+      "type": "同源",
+      "description": "同属斯多葛学派，爱比克泰德重实践，塞涅卡重思辨"
+    },
+    {
+      "source": "老子道德经注",
+      "target": "老子智慧八十一讲",
+      "type": "同源",
+      "description": "同解《道德经》，王弼注 vs 八十一讲"
+    },
+    {
+      "source": "老子道德经注",
+      "target": "周易译注",
+      "type": "关联",
+      "description": "道家经典，易老互参"
+    },
+    {
+      "source": "梁启超讲读王阳明心学",
+      "target": "传习录",
+      "type": "源流",
+      "description": "心学原著 → 后人解读"
+    },
+    {
+      "source": "老子道德经注",
+      "target": "梁启超讲读王阳明心学",
+      "type": "同域",
+      "description": "道家与心学，中国哲学两大脉络"
+    },
+    {
+      "source": "创新者的窘境",
+      "target": "这就是OKR",
+      "type": "互补",
+      "description": "发现机会 → 执行落地"
+    },
+    {
+      "source": "原则",
+      "target": "这就是OKR",
+      "type": "互补",
+      "description": "管理哲学 → 管理工具"
+    },
+    {
+      "source": "卓有成效的管理者",
+      "target": "原则",
+      "type": "同域",
+      "description": "管理学经典，德鲁克 vs 达利欧"
+    },
+    {
+      "source": "创业维艰",
+      "target": "创新者的窘境",
+      "type": "互补",
+      "description": "实战经验 → 理论框架"
+    },
+    {
+      "source": "定位",
+      "target": "增长黑客",
+      "type": "同域",
+      "description": "营销策略：经典定位 vs 增长实战"
+    },
+    {
+      "source": "激荡三十年",
+      "target": "原则",
+      "type": "跨域",
+      "description": "中国商业史 vs 个人管理原则"
+    },
+    {
+      "source": "苏世民我的经验与教训",
+      "target": "原则",
+      "type": "同域",
+      "description": "投资大佬的管理哲学"
+    },
+    {
+      "source": "人性的优点",
+      "target": "人性的弱点",
+      "type": "同源",
+      "description": "卡耐基经典系列"
+    },
+    {
+      "source": "理解人性",
+      "target": "进化心理学",
+      "type": "同域",
+      "description": "人性研究：个体心理学 vs 进化视角"
+    },
+    {
+      "source": "自控力",
+      "target": "和压力做朋友",
+      "type": "同域",
+      "description": "自我管理：意志力 vs 压力转化"
+    },
+    {
+      "source": "芒格之道",
+      "target": "思考致富",
+      "type": "同域",
+      "description": "财富思维：理性投资 vs 心态法则"
+    },
+    {
+      "source": "赢-有钱人和你想象的不一样",
+      "target": "百万富翁快车道",
+      "type": "同域",
+      "description": "财富路径认知"
+    },
+    {
+      "source": "我从达尔文那里学到的投资知识",
+      "target": "芒格之道",
+      "type": "同域",
+      "description": "投资智慧：进化论视角 vs 跨学科思维"
+    },
+    {
+      "source": "芒格之道",
+      "target": "原则",
+      "type": "跨域",
+      "description": "投资思维 → 管理原则"
+    },
+    {
+      "source": "身体重置",
+      "target": "超越百岁",
+      "type": "同域",
+      "description": "健康管理：50+逆龄 → 长寿科学"
+    },
+    {
+      "source": "逻辑哲学论",
+      "target": "Secret Body",
+      "type": "同域",
+      "description": "语言哲学 vs 意识哲学"
+    },
+    {
+      "source": "Secret Body",
+      "target": "我能否相信自己",
+      "type": "跨域",
+      "description": "意识探索 → 信念本质"
+    },
+    {
+      "source": "亲密关系",
+      "target": "男人来自火星女人来自金星",
+      "type": "同域",
+      "description": "两性关系心理学"
+    },
+    {
+      "source": "理解人性",
+      "target": "亲密关系",
+      "type": "跨域",
+      "description": "人性理解 → 亲密关系"
+    },
+    {
+      "source": "历史的教训",
+      "target": "激荡三十年",
+      "type": "跨域",
+      "description": "历史规律 → 中国商业史"
+    },
+    {
+      "source": "自私的基因",
+      "target": "进化心理学",
+      "type": "递进",
+      "description": "基因理论 → 心理学应用"
+    },
+    {
+      "source": "权力",
+      "target": "原则",
+      "type": "跨域",
+      "description": "权力运作 → 管理原则"
+    },
+    {
+      "source": "卡拉马佐夫兄弟",
+      "target": "我能否相信自己",
+      "type": "跨域",
+      "description": "文学信仰 → 哲学信念"
+    },
+    {
+      "source": "也许你该找个人聊聊",
+      "target": "我能否相信自己",
+      "type": "跨域",
+      "description": "心理治疗 → 哲学自传"
+    },
+    {
+      "source": "金字塔原理",
+      "target": "原则",
+      "type": "跨域",
+      "description": "思维工具 → 决策原则"
+    }
+  ],
+  "themes": [
+    "斯多葛哲学",
+    "中国哲学",
+    "商业管理",
+    "心理学",
+    "投资财富",
+    "健康长寿",
+    "西方哲学",
+    "关系与性别",
+    "认知思维",
+    "历史文明",
+    "生命科学",
+    "权力与领导",
+    "文学经典"
+  ],
+  "theme_colors": {
+    "斯多葛哲学": "#8B6914",
+    "中国哲学": "#C0392B",
+    "商业管理": "#2E86C1",
+    "心理学": "#8E44AD",
+    "投资财富": "#27AE60",
+    "健康长寿": "#E67E22",
+    "西方哲学": "#34495E",
+    "关系与性别": "#E74C3C",
+    "认知思维": "#16A085",
+    "历史文明": "#7F8C8D",
+    "生命科学": "#D35400",
+    "权力与领导": "#2C3E50",
+    "文学经典": "#7D3C98"
+  }
+}
