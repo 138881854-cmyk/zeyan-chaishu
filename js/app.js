@@ -25,6 +25,18 @@ async function init(){
       document.getElementById('loading').style.display='none';
       document.getElementById('app').style.display='block';
       renderView('library');
+      
+      // Check URL hash for reader mode (e-reader bookmark support)
+      if(location.hash.startsWith('#reader=')){
+        const title=decodeURIComponent(location.hash.slice(8));
+        setTimeout(()=>{
+          const book=BOOKS.find(b=>b.title===title);
+          if(book){
+            currentBook=book;
+            enterReaderMode();
+          }
+        },500);
+      }
     },300);
   }catch(e){
     console.error('Init error:',e);
@@ -631,7 +643,11 @@ function renderDetailBody(tab){
   if(!b)return;
 
   if(tab==='md'){
-    body.innerHTML='<div class="md-reader">'+marked.parse(b.md_content||'')+'</div>';
+    let toolbar='<div class="md-toolbar">';
+    toolbar+='<button class="md-tool-btn" onclick="generateLongImage()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载长图</button>';
+    toolbar+='<button class="md-tool-btn" onclick="enterReaderMode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>翻书模式</button>';
+    toolbar+='</div>';
+    body.innerHTML=toolbar+'<div class="md-reader">'+marked.parse(b.md_content||'')+'</div>';
     body.scrollTop=0;
   }else if(tab==='audio'){
     renderAudio(body,b);
@@ -764,6 +780,261 @@ function escapeHtml(text){
   div.textContent=text;
   return div.innerHTML;
 }
+
+// ===== Long Image Generation =====
+async function generateLongImage(){
+  const b=currentBook;
+  if(!b||!b.md_content){return;}
+  
+  const gen=document.getElementById('gen-overlay');
+  const genText=document.getElementById('gen-text');
+  gen.classList.add('show');
+  genText.textContent='正在渲染内容...';
+  
+  try{
+    // Ensure fonts are loaded
+    if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
+    
+    // Build the long image template
+    const temp=document.createElement('div');
+    temp.id='long-image-temp';
+    temp.style.cssText='position:fixed;left:-99999px;top:0;width:1080px;background:#f5ede0;box-sizing:border-box;';
+    
+    const ratingColor=b.rating==='S'?'#c8965a':b.rating==='A'?'#cd7f32':'#a08b76';
+    const today=new Date();
+    const dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    
+    let html='<div style="padding:60px 56px 40px;">';
+    // Header
+    html+='<div style="text-align:center;margin-bottom:36px;padding-bottom:24px;border-bottom:2px solid #c8965a;">';
+    html+='<div style="font-family:Noto Serif SC,serif;font-size:16px;color:#a08b76;letter-spacing:6px;margin-bottom:10px;">ZEYAN · 泽言拆书</div>';
+    html+='<div style="font-family:Noto Serif SC,serif;font-size:36px;font-weight:700;color:#1a1410;line-height:1.4;margin-bottom:10px;">'+escapeHtml(b.title)+'</div>';
+    html+='<div style="display:flex;align-items:center;justify-content:center;gap:10px;">';
+    if(b.rating){html+='<span style="background:'+ratingColor+';color:#fff;padding:4px 14px;border-radius:12px;font-size:14px;font-weight:600;">'+b.rating+'级</span>';}
+    if(b.word_count){html+='<span style="color:#a08b76;font-size:14px;">'+b.word_count+'字</span>';}
+    if(b.reading_time){html+='<span style="color:#a08b76;font-size:14px;">· '+b.reading_time+'分钟</span>';}
+    html+='</div></div>';
+    
+    // Body - rendered MD
+    html+='<div class="md-reader" style="font-family:Noto Serif SC,serif;font-size:18px;line-height:1.85;color:#3d2b1f;">';
+    html+=marked.parse(b.md_content);
+    html+='</div>';
+    
+    // Footer
+    html+='<div style="text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid #d4c4a8;">';
+    html+='<div style="font-family:Noto Serif SC,serif;font-size:15px;color:#8b6914;font-weight:600;">泽言拆书 · 个人知识管理系统</div>';
+    html+='<div style="font-size:12px;color:#a08b76;margin-top:6px;">'+dateStr+' · 精读版</div>';
+    html+='</div>';
+    
+    html+='</div>';
+    temp.innerHTML=html;
+    document.body.appendChild(temp);
+    
+    genText.textContent='正在生成长图...';
+    
+    // Calculate scale based on content height
+    const contentHeight=temp.scrollHeight;
+    const scale=contentHeight>12000?1:contentHeight>6000?1.5:2;
+    
+    const canvas=await html2canvas(temp,{
+      scale:scale,
+      useCORS:true,
+      backgroundColor:'#f5ede0',
+      width:1080,
+      windowWidth:1080,
+      height:contentHeight,
+      logging:false,
+    });
+    
+    document.body.removeChild(temp);
+    
+    genText.textContent='正在下载...';
+    
+    // Convert to blob and download
+    canvas.toBlob(function(blob){
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download=b.title+'_精读版.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      gen.classList.remove('show');
+    },'image/png',0.95);
+    
+  }catch(err){
+    console.error('Long image error:',err);
+    gen.classList.remove('show');
+    alert('长图生成失败: '+err.message);
+  }
+}
+
+// ===== Reader Mode (E-ink Friendly) =====
+let readerMode=false;
+let readerCurrentPage=0;
+let readerTotalPages=1;
+let readerFontSize=18;
+let readerUIVisible=true;
+let readerUITimer=null;
+
+function enterReaderMode(){
+  const b=currentBook;
+  if(!b||!b.md_content){return;}
+  
+  // Close detail panel
+  closeDetail();
+  
+  // Show reader overlay
+  const overlay=document.getElementById('reader-overlay');
+  overlay.classList.add('show');
+  document.body.style.overflow='hidden';
+  
+  // Set title
+  document.getElementById('reader-title').textContent=b.title;
+  
+  // Render content
+  const content=document.getElementById('reader-page-content');
+  content.innerHTML='<div class="md-reader">'+marked.parse(b.md_content)+'</div>';
+  content.style.fontSize=readerFontSize+'px';
+  content.style.transform='translateX(0)';
+  
+  readerMode=true;
+  readerCurrentPage=0;
+  
+  // Calculate pages after content is rendered
+  setTimeout(()=>{
+    recalcReaderPages();
+    updateReaderProgress();
+    showReaderUI();
+  },200);
+  
+  // Update URL hash for bookmarking on e-readers
+  history.replaceState(null,'','#reader='+encodeURIComponent(b.title));
+}
+
+function exitReaderMode(){
+  document.getElementById('reader-overlay').classList.remove('show');
+  document.body.style.overflow='';
+  readerMode=false;
+  history.replaceState(null,'',location.pathname);
+}
+
+function recalcReaderPages(){
+  const content=document.getElementById('reader-page-content');
+  const area=document.getElementById('reader-page-area');
+  if(!content||!area){return;}
+  
+  const pageWidth=window.innerWidth;
+  const totalWidth=content.scrollWidth;
+  readerTotalPages=Math.max(1,Math.ceil(totalWidth/pageWidth));
+  
+  // Clamp current page
+  if(readerCurrentPage>=readerTotalPages){
+    readerCurrentPage=readerTotalPages-1;
+  }
+}
+
+function readerGoToPage(page){
+  readerCurrentPage=Math.max(0,Math.min(page,readerTotalPages-1));
+  const content=document.getElementById('reader-page-content');
+  content.style.transform='translateX(-'+readerCurrentPage*100+'vw)';
+  updateReaderProgress();
+}
+
+function readerNextPage(){
+  if(readerCurrentPage<readerTotalPages-1){
+    readerGoToPage(readerCurrentPage+1);
+  }
+}
+
+function readerPrevPage(){
+  if(readerCurrentPage>0){
+    readerGoToPage(readerCurrentPage-1);
+  }
+}
+
+function readerFont(delta){
+  readerFontSize=Math.max(14,Math.min(28,readerFontSize+delta*2));
+  const content=document.getElementById('reader-page-content');
+  content.style.fontSize=readerFontSize+'px';
+  // Recalculate pages after font change
+  setTimeout(()=>{
+    recalcReaderPages();
+    readerGoToPage(readerCurrentPage);
+  },100);
+}
+
+function updateReaderProgress(){
+  const info=document.getElementById('reader-page-info');
+  const fill=document.getElementById('reader-progress-fill');
+  if(info){info.textContent=(readerCurrentPage+1)+' / '+readerTotalPages;}
+  if(fill){fill.style.width=((readerCurrentPage+1)/readerTotalPages*100)+'%';}
+}
+
+function showReaderUI(){
+  const topbar=document.getElementById('reader-topbar');
+  const bottombar=document.getElementById('reader-bottombar');
+  if(topbar)topbar.classList.remove('hidden');
+  if(bottombar)bottombar.classList.remove('hidden');
+  readerUIVisible=true;
+  
+  clearTimeout(readerUITimer);
+  readerUITimer=setTimeout(()=>{
+    if(readerUIVisible&&readerMode){
+      if(topbar)topbar.classList.add('hidden');
+      if(bottombar)bottombar.classList.add('hidden');
+      readerUIVisible=false;
+    }
+  },3000);
+}
+
+function toggleReaderUI(){
+  if(readerUIVisible){
+    document.getElementById('reader-topbar').classList.add('hidden');
+    document.getElementById('reader-bottombar').classList.add('hidden');
+    readerUIVisible=false;
+  }else{
+    showReaderUI();
+  }
+}
+
+// Reader tap zones
+document.getElementById('reader-tap-left').addEventListener('click',()=>{
+  readerPrevPage();
+  showReaderUI();
+});
+document.getElementById('reader-tap-right').addEventListener('click',()=>{
+  readerNextPage();
+  showReaderUI();
+});
+document.getElementById('reader-tap-center').addEventListener('click',()=>{
+  toggleReaderUI();
+});
+
+// Reader keyboard (ArrowLeft/ArrowRight for e-reader physical buttons)
+document.addEventListener('keydown',e=>{
+  if(!readerMode){return;}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){
+    e.preventDefault();
+    readerPrevPage();
+    showReaderUI();
+  }else if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){
+    e.preventDefault();
+    readerNextPage();
+    showReaderUI();
+  }else if(e.key==='Escape'){
+    exitReaderMode();
+  }
+});
+
+// Recalculate on resize/rotation
+window.addEventListener('resize',()=>{
+  if(readerMode){
+    recalcReaderPages();
+    readerGoToPage(readerCurrentPage);
+  }
+});
 
 // ===== Password Gate =====
 const AUTH_PWD='662213';
