@@ -1,16 +1,47 @@
 // ===== State =====
-let BOOKS=[],SOURCE_BOOKS=[],STATS={},QUOTES=[],GRAPH={};
+let BOOKS=[],SOURCE_BOOKS=[],STATS={},QUOTES=[],GRAPH=[],KNOWLEDGE_CARDS=[];
 let currentBook=null,currentCards=[],currentCardIndex=0;
-let currentView='library',currentFilter='all',currentSort='date',currentSearch='';
+let currentView='library',currentFilter='all',currentSort='recent',currentSearch='';
 let currentQuoteFilter='all',currentQuoteSearch='';
 let currentCardFilter='all';
+let currentKCardFilter='all',currentKCardSearch='';
 let charts={};
+let mdFontSize=parseInt(localStorage.getItem('zeyan_md_fontsize'))||15;
+
+// ===== Browse History (localStorage) =====
+const HISTORY_KEY='zeyan_browse_history';
+const SCROLL_KEY='zeyan_scroll_pos';
+
+function getHistory(){
+  try{return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');}catch(e){return[];}
+}
+
+function addToHistory(title){
+  let hist=getHistory().filter(t=>t!==title);
+  hist.unshift(title);
+  if(hist.length>100)hist=hist.slice(0,100);
+  localStorage.setItem(HISTORY_KEY,JSON.stringify(hist));
+}
+
+function saveScrollPos(title,tab,pos){
+  const key=SCROLL_KEY+'_'+title+'_'+tab;
+  try{localStorage.setItem(key,String(pos));}catch(e){}
+}
+
+function getScrollPos(title,tab){
+  const key=SCROLL_KEY+'_'+title+'_'+tab;
+  return parseInt(localStorage.getItem(key)||'0')||0;
+}
+
+function hasBeenRead(title){
+  return getHistory().includes(title);
+}
 
 // ===== Init =====
 async function init(){
   try{
-    const [booksResp,quotesResp,graphResp]=await Promise.all([
-      fetch('data/books.json'),fetch('data/quotes.json'),fetch('data/graph_data.json')
+    const [booksResp,quotesResp,graphResp,cardsResp]=await Promise.all([
+      fetch('data/books.json'),fetch('data/quotes.json'),fetch('data/graph_data.json'),fetch('data/knowledge_cards.json')
     ]);
     const booksData=await booksResp.json();
     BOOKS=booksData.analyzed_books||[];
@@ -19,6 +50,7 @@ async function init(){
 
     try{const qd=await quotesResp.json();QUOTES=qd.quotes||[];}catch(e){QUOTES=[];}
     try{const gd=await graphResp.json();GRAPH=gd;}catch(e){GRAPH={nodes:[],links:[]};}
+    try{const cd=await cardsResp.json();KNOWLEDGE_CARDS=cd.cards||[];}catch(e){KNOWLEDGE_CARDS=[];}
 
     document.getElementById('loading').style.opacity='0';
     setTimeout(()=>{
@@ -59,6 +91,7 @@ function renderView(view){
     case'library':renderLibrary();break;
     case'shelf':renderShelf();break;
     case'cards':renderCardWall();break;
+    case'kcards':renderKnowledgeCards();break;
     case'quotes':renderQuotes();break;
     case'graph':renderGraph();break;
     case'dashboard':renderDashboard();break;
@@ -95,6 +128,7 @@ function renderLibrary(){
   controlsHTML+='<button class="chip" data-filter="complete">完整产出</button>';
   controlsHTML+='</div>';
   controlsHTML+='<select class="sort-select" id="lib-sort">';
+  controlsHTML+='<option value="recent">最近浏览</option>';
   controlsHTML+='<option value="date">按日期</option>';
   controlsHTML+='<option value="rating">按评级</option>';
   controlsHTML+='<option value="words">按字数</option>';
@@ -130,7 +164,16 @@ function renderBookGrid(){
     books=books.filter(b=>b.title.toLowerCase().includes(q));
   }
   // Sort
-  if(currentSort==='rating')books.sort((a,b)=>{(b.rating||'')<(a.rating||'')?1:-1});
+  if(currentSort==='recent'){
+    const hist=getHistory();
+    books.sort((a,b)=>{
+      const ai=hist.indexOf(a.title),bi=hist.indexOf(b.title);
+      if(ai===-1&&bi===-1)return (b.date||'').localeCompare(a.date||'');
+      if(ai===-1)return 1;
+      if(bi===-1)return-1;
+      return ai-bi;
+    });
+  }else if(currentSort==='rating')books.sort((a,b)=>(b.rating||'')<(a.rating||'')?1:-1);
   else if(currentSort==='words')books.sort((a,b)=>(b.word_count||0)-(a.word_count||0));
   else if(currentSort==='title')books.sort((a,b)=>a.title.localeCompare(b.title,'zh'));
   else books.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
@@ -139,13 +182,17 @@ function renderBookGrid(){
   if(!grid)return;
   if(books.length===0){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;padding:40px;color:#a08b76">未找到匹配的书籍</p>';return;}
 
+  const hist=getHistory();
   grid.innerHTML=books.map(b=>{
     const dots=['md','epub','mp3','png','koubo'].map(k=>`<span class="${b['has_'+k]?'on':''}"></span>`).join('');
     const ratingClass=b.rating?`rating-${b.rating}`:'';
-    return `<div class="book-card" onclick="openDetail('${b.title.replace(/'/g,"\\'")}')">
+    const isRead=hist.includes(b.title);
+    const readBadge=isRead?'<div class="read-badge">已读</div>':'';
+    return `<div class="book-card ${isRead?'read':''}" onclick="openDetail('${b.title.replace(/'/g,"\\'")}')">
       <div class="book-cover">
         <div class="book-cover-text">${b.title}</div>
         ${b.rating?`<div class="book-rating ${ratingClass}">${b.rating}</div>`:''}
+        ${readBadge}
       </div>
       <div class="book-info">
         <div class="book-title">${b.title}</div>
@@ -485,6 +532,177 @@ function renderGraphSVG(nodes,links,themeColors){
   });
 }
 
+// ===== View: Knowledge Cards =====
+function renderKnowledgeCards(){
+  const main=document.getElementById('main');
+  const tags=KNOWLEDGE_CARDS.length>0?[...new Set(KNOWLEDGE_CARDS.flatMap(c=>c.tags))]:[];
+
+  let html=`<div class="stats-bar" style="margin:12px 16px">
+    <div class="stat-item"><div class="stat-num">${KNOWLEDGE_CARDS.length}</div><div class="stat-label">知识卡片</div></div>
+    <div class="stat-item"><div class="stat-num">${new Set(KNOWLEDGE_CARDS.map(c=>c.book)).size}</div><div class="stat-label">来源书籍</div></div>
+    <div class="stat-item"><div class="stat-num">${tags.length}</div><div class="stat-label">主题标签</div></div>
+  </div>`;
+
+  html+='<div class="controls-bar">';
+  html+='<input type="text" class="search-box" id="kcard-search" placeholder="搜索卡片内容...">';
+  html+='<div class="filter-chips" id="kcard-filter-chips">';
+  html+='<button class="chip active" data-kcard-filter="all">全部</button>';
+  tags.forEach(t=>{html+=`<button class="chip" data-kcard-filter="${t}">${t}</button>`;});
+  html+='</div></div>';
+
+  html+='<div class="kcards-container" id="kcards-list"></div>';
+  main.innerHTML=html;
+
+  document.getElementById('kcard-search').addEventListener('input',e=>{currentKCardSearch=e.target.value;renderKCardsList();});
+  document.querySelectorAll('[data-kcard-filter]').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('[data-kcard-filter]').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      currentKCardFilter=c.dataset.kcardFilter;
+      renderKCardsList();
+    });
+  });
+
+  currentKCardFilter='all';
+  currentKCardSearch='';
+  renderKCardsList();
+}
+
+function renderKCardsList(){
+  let cards=[...KNOWLEDGE_CARDS];
+  if(currentKCardFilter!=='all')cards=cards.filter(c=>c.tags.includes(currentKCardFilter));
+  if(currentKCardSearch){
+    const s=currentKCardSearch.toLowerCase();
+    cards=cards.filter(c=>
+      c.topic.toLowerCase().includes(s)||
+      c.hook.toLowerCase().includes(s)||
+      c.insight.toLowerCase().includes(s)||
+      c.book.toLowerCase().includes(s)||
+      c.action.some(a=>a.toLowerCase().includes(s))
+    );
+  }
+
+  const list=document.getElementById('kcards-list');
+  if(!list)return;
+  if(cards.length===0){list.innerHTML='<p style="text-align:center;padding:40px;color:#a08b76">未找到匹配的知识卡片</p>';return;}
+
+  // Limit for performance
+  const display=cards.slice(0,80);
+  list.innerHTML=display.map((c,i)=>{
+    const actionsHTML=c.action.map(a=>`<li>${escapeHtml(a)}</li>`).join('');
+    return `<div class="kcard">
+      <div class="kcard-header">
+        <div class="kcard-topic">${escapeHtml(c.topic)}</div>
+        <div class="kcard-tags">${c.tags.map(t=>`<span class="kcard-tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="kcard-section">
+        <div class="kcard-label kcard-hook-label">钩子</div>
+        <div class="kcard-hook">${escapeHtml(c.hook)}</div>
+      </div>
+      <div class="kcard-section">
+        <div class="kcard-label kcard-insight-label">洞见</div>
+        <div class="kcard-insight">${escapeHtml(c.insight)}</div>
+      </div>
+      <div class="kcard-section">
+        <div class="kcard-label kcard-action-label">行动</div>
+        <ul class="kcard-actions">${actionsHTML}</ul>
+      </div>
+      <div class="kcard-footer">
+        <span class="kcard-book" onclick="openDetail('${c.book.replace(/'/g,"\\'")}')">${escapeHtml(c.book)}</span>
+        ${c.rating?`<span class="kcard-rating">${c.rating}</span>`:''}
+        <button class="kcard-copy" onclick="copyKCard(${i})">复制卡片</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  if(cards.length>80){
+    list.innerHTML+=`<p style="text-align:center;padding:20px;color:#a08b76;font-size:13px">还有 ${cards.length-80} 张卡片，请缩小搜索范围</p>`;
+  }
+
+  list.dataset.cards=JSON.stringify(display);
+}
+
+function copyKCard(index){
+  const list=document.getElementById('kcards-list');
+  const cards=JSON.parse(list.dataset.cards||'[]');
+  if(!cards[index])return;
+  const c=cards[index];
+  let text=`【${c.topic}】\n\n`;
+  text+=`📌 钩子\n${c.hook}\n\n`;
+  text+=`💡 洞见\n${c.insight}\n\n`;
+  text+=`✅ 行动\n`;
+  c.action.forEach((a,i)=>{text+=`${i+1}. ${a}\n`;});
+  text+=`\n—— 《${c.book}》`;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=event.target;
+    btn.textContent='已复制';
+    setTimeout(()=>btn.textContent='复制卡片',2000);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    event.target.textContent='已复制';
+    setTimeout(()=>event.target.textContent='复制卡片',2000);
+  });
+}
+
+function renderBookKnowledgeCards(body,b){
+  const cards=KNOWLEDGE_CARDS.filter(c=>c.book===b.title);
+  if(cards.length===0){
+    body.innerHTML='<p style="padding:40px;text-align:center;color:#a08b76">暂无知识卡片</p>';
+    return;
+  }
+  let html='<div class="kcards-book-container">';
+  cards.forEach((c,i)=>{
+    const actionsHTML=c.action.map(a=>`<li>${escapeHtml(a)}</li>`).join('');
+    html+=`<div class="kcard">
+      <div class="kcard-header">
+        <div class="kcard-topic">${escapeHtml(c.topic)}</div>
+        <div class="kcard-tags">${c.tags.map(t=>`<span class="kcard-tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="kcard-section">
+        <div class="kcard-label kcard-hook-label">钩子</div>
+        <div class="kcard-hook">${escapeHtml(c.hook)}</div>
+      </div>
+      <div class="kcard-section">
+        <div class="kcard-label kcard-insight-label">洞见</div>
+        <div class="kcard-insight">${escapeHtml(c.insight)}</div>
+      </div>
+      <div class="kcard-section">
+        <div class="kcard-label kcard-action-label">行动</div>
+        <ul class="kcard-actions">${actionsHTML}</ul>
+      </div>
+      <button class="kcard-copy" onclick="copyBookKCard('${b.title.replace(/'/g,"\\'")}',${i})">复制卡片</button>
+    </div>`;
+  });
+  html+='</div>';
+  body.innerHTML=html;
+  body.dataset.kcards=JSON.stringify(cards);
+}
+
+function copyBookKCard(bookTitle,index){
+  const body=document.getElementById('detail-body');
+  const cards=JSON.parse(body.dataset.kcards||'[]');
+  if(!cards[index])return;
+  const c=cards[index];
+  let text=`【${c.topic}】\n\n`;
+  text+=`📌 钩子\n${c.hook}\n\n`;
+  text+=`💡 洞见\n${c.insight}\n\n`;
+  text+=`✅ 行动\n`;
+  c.action.forEach((a,i)=>{text+=`${i+1}. ${a}\n`;});
+  text+=`\n—— 《${c.book}》`;
+  navigator.clipboard.writeText(text).then(()=>{
+    event.target.textContent='已复制';
+    setTimeout(()=>event.target.textContent='复制卡片',2000);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    event.target.textContent='已复制';
+    setTimeout(()=>event.target.textContent='复制卡片',2000);
+  });
+}
+
 // ===== View: Dashboard =====
 function renderDashboard(){
   const main=document.getElementById('main');
@@ -608,22 +826,34 @@ function openDetail(title){
   if(!book)return;
   currentBook=book;
 
+  // Record browse history
+  addToHistory(title);
+
   document.getElementById('detail-title').textContent=book.title;
 
-  // Tabs
+  // Tabs - add knowledge cards tab if available
   const tabs=document.getElementById('detail-tabs');
   let tabsHTML='';
   if(book.md_content)tabsHTML+='<button class="active" data-tab="md">精读版</button>';
   if(book.has_mp3||(book.mp3_files&&book.mp3_files.length>0))tabsHTML+='<button data-tab="audio">音频</button>';
   if(book.png_files&&book.png_files.length>0)tabsHTML+=`<button data-tab="cards">卡片 (${book.png_files.length})</button>`;
+  // Check if this book has knowledge cards
+  const bookKCards=KNOWLEDGE_CARDS.filter(c=>c.book===title);
+  if(bookKCards.length>0)tabsHTML+=`<button data-tab="kcards">知识卡 (${bookKCards.length})</button>`;
   if(book.koubo_content)tabsHTML+='<button data-tab="koubo">口播</button>';
   tabs.innerHTML=tabsHTML;
 
   // Bind tab events
   tabs.querySelectorAll('button').forEach(b=>{
     b.addEventListener('click',()=>{
+      // Save scroll pos of current tab before switching
+      const body=document.getElementById('detail-body');
+      if(currentBook&&currentTab){
+        saveScrollPos(currentBook.title,currentTab,body.scrollTop);
+      }
       tabs.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
+      currentTab=b.dataset.tab;
       renderDetailBody(b.dataset.tab);
     });
   });
@@ -634,8 +864,13 @@ function openDetail(title){
 
   // Default tab
   const firstTab=tabs.querySelector('button');
-  if(firstTab)renderDetailBody(firstTab.dataset.tab);
+  if(firstTab){
+    currentTab=firstTab.dataset.tab;
+    renderDetailBody(firstTab.dataset.tab);
+  }
 }
+
+let currentTab='md';
 
 function renderDetailBody(tab){
   const body=document.getElementById('detail-body');
@@ -646,16 +881,42 @@ function renderDetailBody(tab){
     let toolbar='<div class="md-toolbar">';
     toolbar+='<button class="md-tool-btn" onclick="generateLongImage()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载长图</button>';
     toolbar+='<button class="md-tool-btn" onclick="enterReaderMode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>翻书模式</button>';
+    toolbar+='<div class="md-font-ctrl"><button class="md-tool-btn md-font-btn" onclick="adjustMdFont(-1)" title="缩小字号">A-</button><button class="md-tool-btn md-font-btn" onclick="adjustMdFont(1)" title="放大字号">A+</button></div>';
     toolbar+='</div>';
-    body.innerHTML=toolbar+'<div class="md-reader">'+marked.parse(b.md_content||'')+'</div>';
-    body.scrollTop=0;
+    body.innerHTML=toolbar+'<div class="md-reader" id="md-reader-content">'+marked.parse(b.md_content||'')+'</div>';
+    // Apply saved font size
+    const reader=document.getElementById('md-reader-content');
+    if(reader)reader.style.fontSize=mdFontSize+'px';
+    // Restore scroll position
+    const savedPos=getScrollPos(b.title,'md');
+    if(savedPos>0){
+      body.scrollTop=0;
+      setTimeout(()=>{body.scrollTop=savedPos;},100);
+    }else{
+      body.scrollTop=0;
+    }
+    // Track scroll to save position
+    body.onscroll=()=>{
+      if(currentBook&&currentTab==='md'){
+        saveScrollPos(currentBook.title,'md',body.scrollTop);
+      }
+    };
   }else if(tab==='audio'){
     renderAudio(body,b);
   }else if(tab==='cards'){
     renderCardGallery(body,b);
+  }else if(tab==='kcards'){
+    renderBookKnowledgeCards(body,b);
   }else if(tab==='koubo'){
     renderKoubo(body,b);
   }
+}
+
+function adjustMdFont(delta){
+  mdFontSize=Math.max(12,Math.min(24,mdFontSize+delta));
+  localStorage.setItem('zeyan_md_fontsize',String(mdFontSize));
+  const reader=document.getElementById('md-reader-content');
+  if(reader)reader.style.fontSize=mdFontSize+'px';
 }
 
 function renderAudio(body,b){
@@ -714,11 +975,21 @@ document.getElementById('detail-overlay').addEventListener('click',e=>{
   if(e.target.id==='detail-overlay')closeDetail();
 });
 function closeDetail(){
+  // Save scroll position before closing
+  const body=document.getElementById('detail-body');
+  if(currentBook&&currentTab){
+    saveScrollPos(currentBook.title,currentTab,body.scrollTop);
+  }
+  body.onscroll=null;
   document.getElementById('detail-overlay').classList.remove('show');
   document.body.style.overflow='';
   // Stop audio
   const player=document.getElementById('audio-player');
   if(player){player.pause();player.src='';}
+  // Re-sort library if on recent sort
+  if(currentView==='library'&&currentSort==='recent'){
+    renderBookGrid();
+  }
 }
 
 // ===== Lightbox =====
@@ -795,53 +1066,85 @@ async function generateLongImage(){
     // Ensure fonts are loaded
     if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
     
-    // Build the long image template
-    const temp=document.createElement('div');
-    temp.id='long-image-temp';
-    temp.style.cssText='position:fixed;left:-99999px;top:0;width:1080px;background:#f5ede0;box-sizing:border-box;';
-    
+    // Mobile-optimized: 750px width standard (displays at 375px on phone = 2x)
+    // Font sizes calculated so text appears 14-16px on a 375px phone screen
+    const IMG_W=750;
     const ratingColor=b.rating==='S'?'#c8965a':b.rating==='A'?'#cd7f32':'#a08b76';
     const today=new Date();
     const dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
     
-    let html='<div style="padding:60px 56px 40px;">';
+    // Build the long image template with mobile-optimized typography
+    const temp=document.createElement('div');
+    temp.id='long-image-temp';
+    temp.style.cssText='position:fixed;left:-99999px;top:0;width:'+IMG_W+'px;background:#f5ede0;box-sizing:border-box;font-family:Noto Serif SC,serif;';
+    
+    let html='<div style="padding:50px 40px 36px;">';
+    
     // Header
-    html+='<div style="text-align:center;margin-bottom:36px;padding-bottom:24px;border-bottom:2px solid #c8965a;">';
-    html+='<div style="font-family:Noto Serif SC,serif;font-size:16px;color:#a08b76;letter-spacing:6px;margin-bottom:10px;">ZEYAN · 泽言拆书</div>';
-    html+='<div style="font-family:Noto Serif SC,serif;font-size:36px;font-weight:700;color:#1a1410;line-height:1.4;margin-bottom:10px;">'+escapeHtml(b.title)+'</div>';
-    html+='<div style="display:flex;align-items:center;justify-content:center;gap:10px;">';
-    if(b.rating){html+='<span style="background:'+ratingColor+';color:#fff;padding:4px 14px;border-radius:12px;font-size:14px;font-weight:600;">'+b.rating+'级</span>';}
-    if(b.word_count){html+='<span style="color:#a08b76;font-size:14px;">'+b.word_count+'字</span>';}
-    if(b.reading_time){html+='<span style="color:#a08b76;font-size:14px;">· '+b.reading_time+'分钟</span>';}
+    html+='<div style="text-align:center;margin-bottom:32px;padding-bottom:22px;border-bottom:2px solid #c8965a;">';
+    html+='<div style="font-size:24px;color:#a08b76;letter-spacing:8px;margin-bottom:12px;">ZEYAN · 泽言拆书</div>';
+    html+='<div style="font-size:42px;font-weight:700;color:#1a1410;line-height:1.35;margin-bottom:14px;">'+escapeHtml(b.title)+'</div>';
+    html+='<div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">';
+    if(b.rating){html+='<span style="background:'+ratingColor+';color:#fff;padding:6px 18px;border-radius:16px;font-size:22px;font-weight:600;">'+b.rating+'级</span>';}
+    if(b.word_count){html+='<span style="color:#a08b76;font-size:22px;">'+b.word_count+'字</span>';}
+    if(b.reading_time){html+='<span style="color:#a08b76;font-size:22px;">· '+b.reading_time+'分钟</span>';}
     html+='</div></div>';
     
-    // Body - rendered MD
-    html+='<div class="md-reader" style="font-family:Noto Serif SC,serif;font-size:18px;line-height:1.85;color:#3d2b1f;">';
+    // Body - rendered MD with mobile-optimized font sizes
+    // 30px body text → displays as ~15px on 375px phone screen
+    html+='<div class="long-img-body" style="font-size:30px;line-height:1.9;color:#3d2b1f;">';
     html+=marked.parse(b.md_content);
     html+='</div>';
     
     // Footer
-    html+='<div style="text-align:center;margin-top:48px;padding-top:24px;border-top:1px solid #d4c4a8;">';
-    html+='<div style="font-family:Noto Serif SC,serif;font-size:15px;color:#8b6914;font-weight:600;">泽言拆书 · 个人知识管理系统</div>';
-    html+='<div style="font-size:12px;color:#a08b76;margin-top:6px;">'+dateStr+' · 精读版</div>';
+    html+='<div style="text-align:center;margin-top:44px;padding-top:22px;border-top:1px solid #d4c4a8;">';
+    html+='<div style="font-size:24px;color:#8b6914;font-weight:600;">泽言拆书 · 个人知识管理系统</div>';
+    html+='<div style="font-size:20px;color:#a08b76;margin-top:8px;">'+dateStr+' · 精读版</div>';
     html+='</div>';
     
     html+='</div>';
     temp.innerHTML=html;
     document.body.appendChild(temp);
     
+    // Apply mobile-optimized styles to MD elements within the long image
+    const bodyEl=temp.querySelector('.long-img-body');
+    if(bodyEl){
+      const style=document.createElement('style');
+      style.textContent=`
+        .long-img-body h1{font-size:40px;font-weight:700;color:#1a1410;margin-bottom:20px;line-height:1.35;}
+        .long-img-body h2{font-size:34px;font-weight:600;color:#8b6914;margin:28px 0 16px;border-bottom:2px solid #c8965a;padding-bottom:8px;}
+        .long-img-body h3{font-size:32px;font-weight:600;color:#3d2b1f;margin:24px 0 12px;}
+        .long-img-body p{font-size:30px;line-height:1.9;color:#3d2b1f;margin-bottom:18px;text-align:justify;}
+        .long-img-body blockquote{border-left:4px solid #c8965a;padding:14px 22px;margin:18px 0;background:#faf6ef;border-radius:0 8px 8px 0;}
+        .long-img-body blockquote p{font-size:28px;color:#5d4434;margin:0;line-height:1.85;}
+        .long-img-body strong{color:#8b6914;font-weight:600;}
+        .long-img-body em{color:#5d4434;font-style:italic;}
+        .long-img-body ul,.long-img-body ol{padding-left:28px;margin-bottom:18px;}
+        .long-img-body li{font-size:30px;line-height:1.85;color:#3d2b1f;margin-bottom:10px;}
+        .long-img-body code{background:#e8dcc8;padding:3px 8px;border-radius:4px;font-size:26px;}
+        .long-img-body table{width:100%;border-collapse:collapse;margin:18px 0;font-size:24px;}
+        .long-img-body th,.long-img-body td{border:1px solid #d4c4a8;padding:10px 14px;text-align:left;}
+        .long-img-body th{background:#faf6ef;font-weight:600;}
+        .long-img-body hr{border:none;border-top:2px solid #d4c4a8;margin:28px 0;}
+      `;
+      temp.appendChild(style);
+    }
+    
     genText.textContent='正在生成长图...';
     
-    // Calculate scale based on content height
+    // Wait for rendering
+    await new Promise(r=>setTimeout(r,200));
+    
     const contentHeight=temp.scrollHeight;
-    const scale=contentHeight>12000?1:contentHeight>6000?1.5:2;
+    // Scale 2 for crisp text on retina/hi-dpi screens
+    const scale=contentHeight>20000?1:contentHeight>10000?1.5:2;
     
     const canvas=await html2canvas(temp,{
       scale:scale,
       useCORS:true,
       backgroundColor:'#f5ede0',
-      width:1080,
-      windowWidth:1080,
+      width:IMG_W,
+      windowWidth:IMG_W,
       height:contentHeight,
       logging:false,
     });
