@@ -4,7 +4,7 @@
     "complete_books": 58,
     "total_words": 227966,
     "total_reading_hours": 12.7,
-    "total_mp3": 263,
+    "total_mp3": 257,
     "total_png": 198,
     "total_koubo_words": 69708,
     "source_books": 248
@@ -1127,7 +1127,7 @@
       "has_epub": true,
       "epub_count": 1,
       "has_mp3": true,
-      "mp3_count": 7,
+      "mp3_count": 1,
       "has_png": true,
       "png_count": 4,
       "has_html": false,
