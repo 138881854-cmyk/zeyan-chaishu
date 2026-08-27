@@ -1,12 +1,36 @@
 {
   "nodes": [
     {
+      "id": ".playwright-cli",
+      "title": ".playwright-cli",
+      "rating": "",
+      "word_count": 0,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "168间歇性断食",
+      "title": "168间歇性断食",
+      "rating": "",
+      "word_count": 1648,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "Secret Body",
       "title": "Secret Body",
       "rating": "S",
       "word_count": 3996,
       "theme": "西方哲学",
       "color": "#34495E"
+    },
+    {
+      "id": "中老年人力量训练指南",
+      "title": "中老年人力量训练指南",
+      "rating": "",
+      "word_count": 1613,
+      "theme": "其他",
+      "color": "#95A5A6"
     },
     {
       "id": "也许你该找个人聊聊",
@@ -41,6 +65,14 @@
       "color": "#8E44AD"
     },
     {
+      "id": "优雅老去",
+      "title": "优雅老去",
+      "rating": "",
+      "word_count": 1425,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "传习录",
       "title": "传习录",
       "rating": "",
@@ -55,6 +87,30 @@
       "word_count": 4098,
       "theme": "斯多葛哲学",
       "color": "#8B6914"
+    },
+    {
+      "id": "像罗马皇帝一样思考",
+      "title": "像罗马皇帝一样思考",
+      "rating": "",
+      "word_count": 1604,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "全脑教养法实战指南",
+      "title": "全脑教养法实战指南",
+      "rating": "",
+      "word_count": 3444,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "六祖坛经",
+      "title": "六祖坛经",
+      "rating": "",
+      "word_count": 3229,
+      "theme": "其他",
+      "color": "#95A5A6"
     },
     {
       "id": "创业维艰",
@@ -145,12 +201,44 @@
       "color": "#2E86C1"
     },
     {
+      "id": "异类的天赋",
+      "title": "异类的天赋",
+      "rating": "",
+      "word_count": 2055,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "影响力",
+      "title": "影响力",
+      "rating": "S",
+      "word_count": 6702,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "思考快与慢",
+      "title": "思考快与慢",
+      "rating": "",
+      "word_count": 2219,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "思考致富",
       "title": "思考致富",
       "rating": "",
       "word_count": 1929,
       "theme": "投资财富",
       "color": "#27AE60"
+    },
+    {
+      "id": "惊人的超慢跑",
+      "title": "惊人的超慢跑",
+      "rating": "",
+      "word_count": 1403,
+      "theme": "其他",
+      "color": "#95A5A6"
     },
     {
       "id": "我从达尔文那里学到的投资知识",
@@ -161,6 +249,14 @@
       "color": "#27AE60"
     },
     {
+      "id": "我们今天怎样做父亲",
+      "title": "我们今天怎样做父亲",
+      "rating": "",
+      "word_count": 1414,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "我能否相信自己",
       "title": "我能否相信自己",
       "rating": "S",
@@ -169,12 +265,44 @@
       "color": "#34495E"
     },
     {
+      "id": "掌控习惯",
+      "title": "掌控习惯",
+      "rating": "S",
+      "word_count": 7648,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "昼夜节律密码",
+      "title": "昼夜节律密码",
+      "rating": "",
+      "word_count": 3753,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "最重要的事只有一件",
+      "title": "最重要的事只有一件",
+      "rating": "S",
+      "word_count": 11739,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "权力",
       "title": "权力",
       "rating": "",
-      "word_count": 6688,
+      "word_count": 6737,
       "theme": "权力与领导",
       "color": "#2C3E50"
+    },
+    {
+      "id": "权力的48条法则",
+      "title": "权力的48条法则",
+      "rating": "",
+      "word_count": 1644,
+      "theme": "其他",
+      "color": "#95A5A6"
     },
     {
       "id": "梁启超讲读王阳明心学",
@@ -225,12 +353,28 @@
       "color": "#27AE60"
     },
     {
+      "id": "穷查理宝典",
+      "title": "穷查理宝典",
+      "rating": "S",
+      "word_count": 10163,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "第二性",
       "title": "第二性",
       "rating": "",
       "word_count": 3337,
       "theme": "关系与性别",
       "color": "#E74C3C"
+    },
+    {
+      "id": "精力管理",
+      "title": "精力管理",
+      "rating": "S",
+      "word_count": 9511,
+      "theme": "其他",
+      "color": "#95A5A6"
     },
     {
       "id": "老子智慧八十一讲",
@@ -281,6 +425,14 @@
       "color": "#2E86C1"
     },
     {
+      "id": "论幸福生活",
+      "title": "论幸福生活",
+      "rating": "",
+      "word_count": 1483,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "赢-有钱人和你想象的不一样",
       "title": "赢-有钱人和你想象的不一样",
       "rating": "",
@@ -297,12 +449,44 @@
       "color": "#E67E22"
     },
     {
+      "id": "身体从未忘记",
+      "title": "身体从未忘记",
+      "rating": "",
+      "word_count": 2249,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "身体重置",
       "title": "身体重置",
       "rating": "A",
       "word_count": 4214,
       "theme": "健康长寿",
       "color": "#E67E22"
+    },
+    {
+      "id": "轻断食底层逻辑视频",
+      "title": "轻断食底层逻辑视频",
+      "rating": "",
+      "word_count": 1544,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "轻断食戒糖篇",
+      "title": "轻断食戒糖篇",
+      "rating": "",
+      "word_count": 1787,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "轻断食横扫全球的革命",
+      "title": "轻断食横扫全球的革命",
+      "rating": "",
+      "word_count": 1603,
+      "theme": "其他",
+      "color": "#95A5A6"
     },
     {
       "id": "这就是OKR",
@@ -329,12 +513,36 @@
       "color": "#34495E"
     },
     {
+      "id": "重塑大脑重塑人生",
+      "title": "重塑大脑重塑人生",
+      "rating": "",
+      "word_count": 4641,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
+      "id": "重塑杏仁核",
+      "title": "重塑杏仁核",
+      "rating": "",
+      "word_count": 2154,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "金字塔原理",
       "title": "金字塔原理",
       "rating": "",
       "word_count": 2848,
       "theme": "认知思维",
       "color": "#16A085"
+    },
+    {
+      "id": "非暴力沟通",
+      "title": "非暴力沟通",
+      "rating": "S",
+      "word_count": 7529,
+      "theme": "其他",
+      "color": "#95A5A6"
     }
   ],
   "links": [
