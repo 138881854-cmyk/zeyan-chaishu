@@ -505,6 +505,14 @@
       "color": "#95A5A6"
     },
     {
+      "id": "这书能让你戒烟",
+      "title": "这书能让你戒烟",
+      "rating": "S",
+      "word_count": 4872,
+      "theme": "其他",
+      "color": "#95A5A6"
+    },
+    {
       "id": "这就是OKR",
       "title": "这就是OKR",
       "rating": "S",
@@ -519,6 +527,14 @@
       "word_count": 6028,
       "theme": "生命科学",
       "color": "#D35400"
+    },
+    {
+      "id": "迷人的大脑可塑性",
+      "title": "迷人的大脑可塑性",
+      "rating": "S",
+      "word_count": 5182,
+      "theme": "其他",
+      "color": "#95A5A6"
     },
     {
       "id": "逻辑哲学论",
