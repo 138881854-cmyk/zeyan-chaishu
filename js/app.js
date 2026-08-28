@@ -126,6 +126,9 @@ function renderLibrary(){
   controlsHTML+='<button class="chip" data-filter="S">S级</button>';
   controlsHTML+='<button class="chip" data-filter="A">A级</button>';
   controlsHTML+='<button class="chip" data-filter="complete">完整产出</button>';
+  // 类目筛选（按书籍category字段动态生成）
+  const cats=[...new Set(BOOKS.map(b=>b.category).filter(Boolean))];
+  cats.forEach(c=>{controlsHTML+=`<button class="chip" data-filter="cat:${c}">${c}</button>`;});
   controlsHTML+='</div>';
   controlsHTML+='<select class="sort-select" id="lib-sort">';
   controlsHTML+='<option value="recent">最近浏览</option>';
@@ -158,6 +161,7 @@ function renderBookGrid(){
   if(currentFilter==='S')books=books.filter(b=>b.rating==='S');
   else if(currentFilter==='A')books=books.filter(b=>b.rating==='A');
   else if(currentFilter==='complete')books=books.filter(b=>b.is_complete);
+  else if(currentFilter.startsWith('cat:'))books=books.filter(b=>(b.category||'')===currentFilter.slice(4));
   // Search
   if(currentSearch){
     const q=currentSearch.toLowerCase();
@@ -196,7 +200,7 @@ function renderBookGrid(){
       </div>
       <div class="book-info">
         <div class="book-title">${b.title}</div>
-        <div class="book-meta">${b.word_count?b.word_count+'字':''}${b.reading_time?' · '+b.reading_time+'min':''}</div>
+        <div class="book-meta">${b.category?`<span class="book-cat">${b.category}</span>`:''}${b.word_count?b.word_count+'字':''}${b.reading_time?' · '+b.reading_time+'min':''}</div>
         <div class="book-dots">${dots}</div>
       </div>
     </div>`;
